@@ -1,18 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class BaseState : MonoBehaviour
+public class BaseState
 {
-    // Start is called before the first frame update
-    void Start()
+    protected PlayerController controller;
+
+    public BaseState(PlayerController controller)
     {
-        
+        this.controller = controller;
     }
 
-    // Update is called once per frame
-    void Update()
+    public virtual void Update() { }
+    public virtual void Initialize() { }
+
+    protected void OnAttack(InputAction.CallbackContext ctx)
     {
-        
+        controller.ChangeState(controller.attackingState);
     }
 }
