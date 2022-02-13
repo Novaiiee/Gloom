@@ -15,23 +15,23 @@ public class AttackingState : BaseState
 
     public override void Initialize()
     {
-        if (controller.timeSinceLastAttack < controller.attackTimeLength)
-            controller.ChangeState(controller.idleState);
-
-        controller.animator.SetTrigger("IsAttacking");
         Attack();
     }
 
     private void Attack()
     {
         if (controller.timeSinceLastAttack < controller.attackTimeLength)
+        {
             controller.ChangeState(controller.idleState);
+            return;
+        }
 
+        controller.animator.SetTrigger("IsAttacking");
         Collider2D enemy = HasHitEnemy();
 
         if (enemy)
         {
-            Debug.Log("we hit an enemy");
+            //Enemy Logic
         }
 
         controller.timeSinceLastAttack = 0f;
