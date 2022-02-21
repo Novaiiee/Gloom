@@ -1,12 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.InputSystem;
-
 public class EnemyPatrolState : EnemyBaseState
 {
-    public EnemyPatrolState() : base() { }
+    public EnemyPatrolState(EnemyAI enemy) : base(enemy) { }
 
-    public override void Update() { }
+    public override void Update()
+    {
+        if (TargetInDistance(enemy.activationDistance)) enemy.ChangeState(enemy.followState);
+    }
+
     public override void Initialize() { }
 }

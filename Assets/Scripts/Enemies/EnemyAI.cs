@@ -1,11 +1,11 @@
 using UnityEngine;
-using Pathfinding;
 
 public class EnemyAI : MonoBehaviour
 {
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public new BoxCollider2D collider2D;
     [HideInInspector] public LayerMask groundMask;
+    [HideInInspector] public Transform target;
 
     [Header("Jumping")]
     public Transform groundCheck;
@@ -18,68 +18,34 @@ public class EnemyAI : MonoBehaviour
     public float activationDistance = 30f;
     public float stoppingDistance = 2f;
 
-    private Transform target;
+    public EnemyBaseState currentState;
+    public EnemyFollowState followState;
+    public EnemyPatrolState patrolState;
+    public EnemyAttackingState attackingState;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         collider2D = GetComponent<BoxCollider2D>();
-        groundMask = LayerMask.GetMask("Ground");
 
+        followState = new EnemyFollowState(this);
+        patrolState = new EnemyPatrolState(this);
+        attackingState = new EnemyAttackingState(this);
+
+        groundMask = LayerMask.GetMask("Ground");
+        currentState = patrolState;
         target = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     private void Update()
     {
         if (!target) return;
-        if (!TargetInDistance(activationDistance)) return;
-
-        DetectObstacle();
-
-        if (Mathf.Abs(transform.position.x - target.position.x) > stoppingDistance)
-        {
-            transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
-        }
-
-        FlipEnemy();
+        currentState.Update();
     }
 
-    private void Jump()
+    public void ChangeState(EnemyBaseState state)
     {
-        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-    }
-
-    private void FlipEnemy()
-    {
-        if (target.position.x < transform.position.x)
-        {
-            Debug.Log("Is infront");
-            transform.localEulerAngles = new Vector3(0, 0, 0);
-        }
-        else
-        {
-            Debug.Log("Is behind");
-            transform.localEulerAngles = new Vector3(0, 180, 0);
-        }
-    }
-
-    private void DetectObstacle()
-    {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, -transform.right, obstacleJumpingDistance, groundMask);
-
-        if (hit && IsGrounded())
-        {
-            Jump();
-        }
-    }
-
-    private bool TargetInDistance(float distance)
-    {
-        return (transform.position.x - target.position.x) < distance;
-    }
-
-    private bool IsGrounded()
-    {
-        return Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundMask);
+        currentState = state;
+        currentState.Initialize();
     }
 }
