@@ -47,7 +47,7 @@
 		"Build/": true,
 		"Library/": true,
 		"library/": true,
-		"Assets/Plugins/": true,
+		"Assets/Plugins/": false,
 		"Assets/Animations/": true,
 		"Assets/Resources/": true,
 		"Assets/Scenes/": true,
